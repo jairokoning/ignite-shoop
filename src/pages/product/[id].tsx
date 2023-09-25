@@ -3,9 +3,7 @@ import { ImageContainer, ProductContainer, ProductDetails } from "@/styles/pages
 export default function Product() {
   return (
     <ProductContainer>
-      <ImageContainer>
-
-      </ImageContainer>
+      <ImageContainer />
 
       <ProductDetails>
         <h1>Camiseta X</h1>
