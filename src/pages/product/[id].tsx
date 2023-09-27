@@ -1,16 +1,59 @@
+import { stripe } from "@/lib/stripe";
+import Image from 'next/image'
+import { GetStaticProps } from "next";
+import Stripe from "stripe";
 import { ImageContainer, ProductContainer, ProductDetails } from "@/styles/pages/product";
 
-export default function Product() {
+interface ProductProps {
+  product: {
+    id: string
+    name: string
+    imageUrl: string
+    price: string
+    description: string
+  }
+}
+
+
+export default function Product({ product }: ProductProps) {
   return (
     <ProductContainer>
-      <ImageContainer />
+      <ImageContainer>
+        <Image src={product.imageUrl} width={520} height={480} alt="" />
+      </ImageContainer>
 
       <ProductDetails>
-        <h1>Camiseta X</h1>
-        <span>$ 79.90</span>
-        <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Cumque, tempore a! Libero et doloribus debitis adipisci necessitatibus saepe repellat explicabo labore! Vel doloribus excepturi maxime hic, culpa pariatur reprehenderit! Itaque!</p>
+        <h1>{product.name}</h1>
+        <span>{product.price}</span>
+        <p>{product.description}</p>
         <button>Comprar agora</button>
       </ProductDetails>
     </ProductContainer>
   )
+}
+
+export const getStaticProps: GetStaticProps<any, { id: string }> = async ({ params }) => {
+  const productId = params!.id
+
+  const product = await stripe.products.retrieve(productId, {
+    expand: ['default_price'],
+  })
+
+  const price = product.default_price as Stripe.Price    
+
+  return {
+    props: {
+      product: {
+        id: product.id,
+        name: product.name,
+        imageUrl: product.images[0],
+        price: new Intl.NumberFormat('en-US', {
+          style: 'currency',
+          currency: 'USD',
+        }).format(price.unit_amount! / 100),
+        description: product.description,
+      }
+    },
+    revalidate: 60 * 60 * 1, //  1 hour
+  }
 }
