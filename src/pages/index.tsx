@@ -1,7 +1,7 @@
-import { GetStaticProps } from 'next';
-import Link from 'next/link';
 import Image from 'next/image'
+import Link from 'next/link';
 import Stripe from 'stripe';
+import { GetStaticProps } from 'next';
 import { stripe } from '@/lib/stripe';
 import { useKeenSlider } from 'keen-slider/react'
 import { HomeContainer, Product } from "@/styles/pages/home";
