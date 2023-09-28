@@ -2,7 +2,13 @@ import { stripe } from "@/lib/stripe";
 import { NextApiRequest, NextApiResponse } from "next";
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const priceId = ''
+  if (req.method !== 'POST') {
+    return res.status(405).json({ error: 'Method not allowed' })
+  }
+  const { priceId } = req.body
+  if (!priceId) {
+    return res.status(400).json({ error: 'Price not found' })
+  }
   const successUrl = `${process.env.NEXT_URL}/success`
   const cancelUrl = `${process.env.NEXT_URL}/`
 
@@ -12,7 +18,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     mode: 'payment',
     line_items: [
       {
-        price:priceId,
+        price: priceId,
         quantity: 1,
       }
     ]
